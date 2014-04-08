@@ -7,7 +7,7 @@ use HiPi::Constant qw( :raspberry );
 
 # procedury jsou pod hlavnim programem
 sub pininit;
-sub startLED; 
+sub start; 
 
 # the pins we are going to use
     my $pinid1 = RPI_PAD1_PIN_21; my $pin1;
@@ -27,8 +27,8 @@ my $log = "/opt/ezs/log/ezs.log";
 # PROGAM:
 # inicializace PINu - 6 input, 1 output LED
 pininit();     
-#start programu LEDky
-startLED();
+#start programu
+start();
 
 
 while (1) {
@@ -75,7 +75,7 @@ sub pininit(){
     $pin6 = $dev->get_pin($pinid6); $pin6->mode(RPI_PINMODE_INPT);
 }
 
-sub startLED() {
+sub start() {
         print "$date: zaciname ";
 	system ("/usr/bin/aplay -q hallelujah.wav");
         print "ted\n";
