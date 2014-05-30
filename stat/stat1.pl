@@ -27,7 +27,7 @@ foreach $row (0..@filename-1){
  		    print "$starejklic: $f: @{ $denni_pole{$f} }\n";
 		    $count_f++;
  		}
-		print "Za den $starejklic zpracovano $count_f uzivatelu\n";
+		print "Za datum $starejklic zpracovano $count_f uzivatelu\n";
 		undef %denni_pole;
 	}
 	push @{ $denni_pole{$ID} }, $uxtime;
