@@ -7,7 +7,7 @@
 # Definice konstant
 # $DELTA = udava cas v sekundach mezi stisknutim tlacitka, 
 #          kdy je povazovano za chybu nebo dvakrat klik
-$DELTA = 10;
+$DELTA = 11;
 
 open(FILENAME,"<ezs.log");
 while ( <FILENAME> )
@@ -49,30 +49,39 @@ sub zpracuj_den_uzivatele ()
 	$count_user = 0;
 	@docasne_pole = ();
 	foreach $user ( keys %tempole ) {
+		@novepole = ();
 		$stav = 0;
 		#pocet zaznamu v poli jednoho user dany den
 		$pocetmu= keys $tempole{$user};
-		#sanace 
-		if ($pocetmu < 3) {
-			$stav = "malo vstupu - " . $pocetmu;
-		}
-
-		elsif ( 0 != $pocetmu % 2){
-			$stav = "lichy vstup - " . $pocetmu;	
-		}
-	
+		$pocetmu_predsanaci = $pocetmu;	
 		$uxnula = 0;
+ 	    	print "BEFORE $dnesni_datum: $user: $pocetmu ZAZN. : @{ $tempole{$user} }\n";
 		foreach $uxt (values $tempole{$user}){
 			$rozdil = $uxt - $uxnula;
 			if ($rozdil < $DELTA){
-				print "POMOC, nekdo zmacnul tlacitko moc brzy po sobe: $user: $uxnula - $uxt\n";
+				print "MAZAME $user: puvodne $uxnula - necham $uxt\n";
+			}
+			else {
+				push @novepole, $uxt; 
 			}
 			$uxnula = $uxt;
 		}
- 	    	print "$dnesni_datum: $user: $pocetmu ZAZN. RET: $stav : @{ $tempole{$user} }\n";
+		$pocetmu2= scalar @novepole;
+		#sanace
+                if ($pocetmu2 < 3) {
+                        $stav = "malo vstupu - " . $pocetmu2;
+                }
+
+                elsif ( 0 != $pocetmu2 % 2){
+                        $stav = "lichy vstup - " . $pocetmu2;
+                }
+	
+
+
+		
+ 	    	print "AFTER $dnesni_datum: $user: $pocetmu2 ($pocetmu_predsanaci)  ZAZN. RET: $stav : @novepole \n";
 		$count_user++;
  	}
 	print "Za datum $dnesni_datum zpracovano $count_user uzivatelu\n";
-        undef %tempole;
-
+        %tempole = ();
 }
