@@ -4,6 +4,11 @@
 # Mon May 26 04:54:51 2014,1401072891,user000100
 # Mon May 26 05:54:41 2014,1401076481,user000001
 
+# Definice konstant
+# $DELTA = udava cas v sekundach mezi stisknutim tlacitka, 
+#          kdy je povazovano za chybu nebo dvakrat klik
+$DELTA = 10;
+
 open(FILENAME,"<ezs.log");
 while ( <FILENAME> )
 {
@@ -15,7 +20,8 @@ close(FILENAME);
 $starejklic = 0;
 
 # v elementu [0] hledej prvni tri slova. Ty hledej v dalsi iteraci, dokud se nezmeni
-foreach $row (0..@filename-1){
+#foreach $row (0..@filename-1){
+foreach $row (0..@filename){
 	$datumovka = $filename[$row][0];
 	($dweek, $month, $date, $time, $year)  = split(' ',$datumovka);
 	$uxtime = $filename[$row][1];
@@ -54,8 +60,14 @@ sub zpracuj_den_uzivatele ()
 		elsif ( 0 != $pocetmu % 2){
 			$stav = "lichy vstup - " . $pocetmu;	
 		}
+	
+		$uxnula = 0;
 		foreach $uxt (values $tempole{$user}){
-			print "TESTUJU: $uxt ...";
+			$rozdil = $uxt - $uxnula;
+			if ($rozdil < $DELTA){
+				print "POMOC, nekdo zmacnul tlacitko moc brzy po sobe: $user: $uxnula - $uxt\n";
+			}
+			$uxnula = $uxt;
 		}
  	    	print "$dnesni_datum: $user: $pocetmu ZAZN. RET: $stav : @{ $tempole{$user} }\n";
 		$count_user++;

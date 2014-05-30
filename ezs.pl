@@ -7,7 +7,7 @@ use HiPi::Constant qw( :raspberry );
 
 # procedury jsou pod hlavnim programem
 sub pininit;
-sub start; 
+sub startLED; 
 
 # the pins we are going to use
     my $pinid1 = RPI_PAD1_PIN_21; my $pin1;
@@ -27,9 +27,8 @@ my $log = "/opt/ezs/log/ezs.log";
 # PROGAM:
 # inicializace PINu - 6 input, 1 output LED
 pininit();     
-#start programu
-start();
-
+#start programu LEDky
+startLED();
 
 while (1) {
 	$str = "0b".$pin1->value().$pin2->value().$pin3->value().$pin4->value().$pin5->value().$pin6->value();
@@ -38,12 +37,12 @@ while (1) {
 		if (!$click){
 			open (LOG, '>>', $log) or die "Can not open logfile $log";
 			$date = localtime();
-			print "$date "; 
-			print LOG "$date "; 
-			printf "vstup uzivatel c.: %06b\n",$bit;
-			printf LOG "vstup uzivatel c.: %06b\n",$bit;
+			print "$date,"; print time; 
+			print LOG "$date,"; print LOG time;
+			printf ",user%06b\n",$bit;
+			printf LOG ",user%06b\n",$bit;
 		 	#system ("/usr/bin/aplay -q b2.wav");	
-		 	system ("/usr/bin/aplay -q b1.wav");	
+		 	system ("/usr/bin/aplay -q /opt/ezs/b1.wav");	
 			usleep (30000);			
 			close (LOG);
 		}
@@ -52,6 +51,7 @@ while (1) {
 	else {
 		$click = 0;
 	}
+	usleep (10000);			
 }
 
 #################
@@ -75,9 +75,13 @@ sub pininit(){
     $pin6 = $dev->get_pin($pinid6); $pin6->mode(RPI_PINMODE_INPT);
 }
 
-sub start() {
+sub startLED() {
         print "$date: zaciname ";
-	system ("/usr/bin/aplay -q hallelujah.wav");
+	system ("/usr/bin/aplay -q /opt/ezs/hallelujah.wav");
         print "ted\n";
-	system ("/usr/bin/aplay -q b2.wav");
+	system ("/usr/bin/aplay -q /opt/ezs/b2.wav");
+	open (LOG, '>>', $log) or die "Can not open logfile $log";
+        $date = localtime();	
+	print LOG "#begin $date\n";
+	close LOG;
 }
