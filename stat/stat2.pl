@@ -9,6 +9,17 @@
 #          kdy je povazovano za chybu nebo dvakrat klik
 $DELTA = 11;
 
+my %user_tab;
+
+open FH, "tabulka-ID.txt" or die $!;
+
+while (<FH>) {
+    chomp;    # faster than regex to remove newlines
+    my ($key,$value) = split(/,\s?/);    # '?' makes space optional...modify as needed
+    $user_tab{$key} = $value;
+}
+close FH;
+
 open(FILENAME,"<ezs.log");
 while ( <FILENAME> )
 {
@@ -80,7 +91,7 @@ sub zpracuj_den_uzivatele ()
                 elsif ( 0 != $pocetmu2 % 2){
                         $stav = "lichy vstup - " . $pocetmu2;
                 }
- 	    	print "AFTER $dnesni_datum: $user: $pocetmu2 ($pocetmu_predsanaci)  ZAZN. RET: $stav : @novepole \n";
+ 	    	print "AFTER $dnesni_datum: $user: $user_tab{$user}: $pocetmu2 ($pocetmu_predsanaci)  ZAZN. RET: $stav : @novepole \n";
 		$count_user++;
  	}
 	print "Za datum $dnesni_datum zpracovano $count_user uzivatelu\n";

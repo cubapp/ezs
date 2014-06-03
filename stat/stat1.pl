@@ -75,13 +75,9 @@ sub zpracuj_den_uzivatele ()
                 elsif ( 0 != $pocetmu2 % 2){
                         $stav = "lichy vstup - " . $pocetmu2;
                 }
-	
-
-
-		
  	    	print "AFTER $dnesni_datum: $user: $pocetmu2 ($pocetmu_predsanaci)  ZAZN. RET: $stav : @novepole \n";
 		$count_user++;
  	}
 	print "Za datum $dnesni_datum zpracovano $count_user uzivatelu\n";
-        %tempole = ();
+        undef %tempole;
 }
