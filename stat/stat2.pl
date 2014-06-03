@@ -15,6 +15,9 @@ $id_file = "tabulka-ID.txt";
 # skutecny logfile z EZSky
 $real_logfile = "ezs.log";
 
+# DEBUG
+$DEBUG = 1;
+
 #Hash array %user_tab
 # ID,real_user_name
 my %user_tab;
@@ -77,11 +80,11 @@ sub zpracuj_den_uzivatele ()
 		$pocetmu= keys $tempole{$user};
 		$pocetmu_predsanaci = $pocetmu;	
 		$uxnula = 0;
- 	    	print "BEFORE $dnesni_datum: $user: $pocetmu ZAZN. : @{ $tempole{$user} }\n";
+ 	    	print "BEFORE $dnesni_datum: $user: $pocetmu ZAZN. : @{ $tempole{$user} }\n" if $DEBUG;
 		foreach $uxt (values $tempole{$user}){
 			$rozdil = $uxt - $uxnula;
 			if ($rozdil < $DELTA){
-				print "MAZAME $user: puvodne $uxnula - necham $uxt\n";
+				print "MAZAME $user: puvodne $uxnula - necham $uxt\n" if $DEBUG;
 			}
 			else {
 				push @novepole, $uxt; 
@@ -101,6 +104,6 @@ sub zpracuj_den_uzivatele ()
  	    	print "AFTER $dnesni_datum: $user: $user_tab{$user}: $pocetmu2 ($pocetmu_predsanaci)  ZAZN. RET: $stav : @novepole \n";
 		$count_user++;
  	}
-	print "--------------[ Za datum $dnesni_datum zpracovano $count_user uzivatelu\n";
+	print "-------------[ Za datum $dnesni_datum zpracovano $count_user uzivatelu\n";
         undef %tempole;
 }
