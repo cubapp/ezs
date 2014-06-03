@@ -29,6 +29,7 @@ foreach $row (0..@filename){
 	$klic = $month." ".$date;
 	if ($klic ne $starejklic && $starejklic){
 		&zpracuj_den_uzivatele();
+		%denni_pole = ();
 	}
 	push @{ $denni_pole{$ID} }, $uxtime;
 	$starejklic = $klic;
@@ -44,12 +45,16 @@ foreach $row (0..@filename){
 
 sub zpracuj_den_uzivatele ()
 {
-	%tempole = %denni_pole;	
+	#%tempole = %denni_pole;	
+	for my $k (keys %denni_pole) {
+    		$tempole{$k} = [ @{$denni_pole{$k}} ];
+	}
 	$dnesni_datum = $starejklic;
 	$count_user = 0;
 	@docasne_pole = ();
 	foreach $user ( keys %tempole ) {
-		@novepole = ();
+		#@novepole = ();
+		undef @novepole ;
 		$stav = 0;
 		#pocet zaznamu v poli jednoho user dany den
 		$pocetmu= keys $tempole{$user};
