@@ -102,7 +102,7 @@ sub zpracuj_den_uzivatele ()
                 elsif ( 0 != $pocetmu2 % 2){
                         $stav = "lichy vstup - " . $pocetmu2;
                 }
- 	    	print "AFTER $dnesni_datum: $user: $real_user: $pocetmu2 ($pocetmu_predsanaci)  ZAZN. RET: $stav : @novepole \n";
+ 	    	print "AFTER $dnesni_datum: $user: $real_user: $pocetmu2 ($pocetmu_predsanaci)  ZAZN. RET: $stav : @novepole \n" if $DEBUG;
 		&pocitej_odpracovane($real_user, @novepole);
 		$count_user++;
  	}
@@ -113,30 +113,28 @@ sub zpracuj_den_uzivatele ()
 sub pocitej_odpracovane() {
 	($user, @poleuxt ) = @_;
 	$delka_pole = scalar @poleuxt;
-	print "Z procedury pocitej odpracovane o uzivatele $user: ZAZN: $delka_pole : @poleuxt \n";
-	$oldtick = 0;
+	print "Z procedury pocitej odpracovane o uzivatele $user: ZAZN: $delka_pole : @poleuxt \n" if $DEBUG;
 	#remove last element (tj. odchod domu)
 	# pouze je-li delka pole suda
-	if ( 0 != $delka_pole % 2){
+	if ( $delka_pole % 2){
 		pop (@poleuxt);
-		print "DEBILBUG: Lichej pocet v poli?\n"
 	};
 	#remove first element (tj. prijdu rano do saten)
 	shift (@poleuxt);
-	print "R procedury pocitej odpracovane o uzivatele $user: ZAZN: $delka_pole : @poleuxt \n";
-
+	print "R procedury pocitej odpracovane o uzivatele $user: ZAZN: $delka_pole : @poleuxt \n" if $DEBUG;
 	
 	$suma_sekund = 0;
 	for(my $i=0; $i < @poleuxt; $i++) {
 		$tick1 = $poleuxt[$i];
-		$tick2 = $poleuxt[$i + 1];
-		$rozdil = $tick2 - $tick1;
-		print "Rozdil mezi $tick2 a $tick1 = $rozdil \n";
-		$suma_sekund += $rozdil;
-		$i++; 
+		$i++;
+		$tick2 = $poleuxt[$i];
+		if ($tick2) {
+			$rozdil = $tick2 - $tick1;
+			print "Rozdil mezi $tick2 a $tick1 = $rozdil \n" if $DEBUG;
+			$suma_sekund += $rozdil;
+		}
 	}
 	$suma_minut = $suma_sekund/60;
 	$suma_hodin = $suma_minut/60;
 	print "Celkem $user namakal $suma_sekund s, tj. $suma_minut min, tj $suma_hodin h\n";
-	
 }
