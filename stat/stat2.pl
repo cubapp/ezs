@@ -16,7 +16,7 @@ $id_file = "tabulka-ID.txt";
 $real_logfile = "ezs.log";
 
 # DEBUG
-$DEBUG = 1;
+$DEBUG = 0;
 
 #Hash array %user_tab
 # ID,real_user_name
@@ -68,6 +68,7 @@ foreach $row (0..@filename){
 
 sub zpracuj_den_uzivatele ()
 {
+	# radeji zkopirujeme pole 
 	for my $k (keys %denni_pole) {
     		$tempole{$k} = [ @{$denni_pole{$k}} ];
 	}
@@ -76,6 +77,7 @@ sub zpracuj_den_uzivatele ()
 	@docasne_pole = ();
 	foreach $user ( keys %tempole ) {
 		undef @novepole ;
+		$real_user = $user_tab{$user};
 		$stav = 0;
 		$pocetmu= keys $tempole{$user};
 		$pocetmu_predsanaci = $pocetmu;	
@@ -100,10 +102,41 @@ sub zpracuj_den_uzivatele ()
                 elsif ( 0 != $pocetmu2 % 2){
                         $stav = "lichy vstup - " . $pocetmu2;
                 }
-
- 	    	print "AFTER $dnesni_datum: $user: $user_tab{$user}: $pocetmu2 ($pocetmu_predsanaci)  ZAZN. RET: $stav : @novepole \n";
+ 	    	print "AFTER $dnesni_datum: $user: $real_user: $pocetmu2 ($pocetmu_predsanaci)  ZAZN. RET: $stav : @novepole \n";
+		&pocitej_odpracovane($real_user, @novepole);
 		$count_user++;
  	}
 	print "-------------[ Za datum $dnesni_datum zpracovano $count_user uzivatelu\n";
         undef %tempole;
+}
+
+sub pocitej_odpracovane() {
+	($user, @poleuxt ) = @_;
+	$delka_pole = scalar @poleuxt;
+	print "Z procedury pocitej odpracovane o uzivatele $user: ZAZN: $delka_pole : @poleuxt \n";
+	$oldtick = 0;
+	#remove last element (tj. odchod domu)
+	# pouze je-li delka pole suda
+	if ( 0 != $delka_pole % 2){
+		pop (@poleuxt);
+		print "DEBILBUG: Lichej pocet v poli?\n"
+	};
+	#remove first element (tj. prijdu rano do saten)
+	shift (@poleuxt);
+	print "R procedury pocitej odpracovane o uzivatele $user: ZAZN: $delka_pole : @poleuxt \n";
+
+	
+	$suma_sekund = 0;
+	for(my $i=0; $i < @poleuxt; $i++) {
+		$tick1 = $poleuxt[$i];
+		$tick2 = $poleuxt[$i + 1];
+		$rozdil = $tick2 - $tick1;
+		print "Rozdil mezi $tick2 a $tick1 = $rozdil \n";
+		$suma_sekund += $rozdil;
+		$i++; 
+	}
+	$suma_minut = $suma_sekund/60;
+	$suma_hodin = $suma_minut/60;
+	print "Celkem $user namakal $suma_sekund s, tj. $suma_minut min, tj $suma_hodin h\n";
+	
 }
