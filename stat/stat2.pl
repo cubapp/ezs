@@ -7,7 +7,7 @@
 # Definice konstant
 # $DELTA = udava cas v sekundach mezi stisknutim tlacitka, 
 #          kdy je povazovano za chybu nebo dvakrat klik
-$DELTA = 11;
+$DELTA = 5;
 
 # Tabulka prevodu ID na jmeno
 $id_file = "tabulka-ID.txt";
@@ -16,6 +16,7 @@ $id_file = "tabulka-ID.txt";
 $real_logfile = "ezs.log";
 
 # DEBUG
+#$DEBUG = 1;
 $DEBUG = 0;
 
 #Hash array %user_tab
@@ -116,11 +117,14 @@ sub pocitej_odpracovane() {
 	print "Z procedury pocitej odpracovane o uzivatele $user: ZAZN: $delka_pole : @poleuxt \n" if $DEBUG;
 	#remove last element (tj. odchod domu)
 	# pouze je-li delka pole suda
-	if ( $delka_pole % 2){
-		pop (@poleuxt);
+	if ($delka_pole % 2 == 0 ){
+		$odmazanej = pop (@poleuxt);
+		$trtr = $delka_pole % 2 ;
+		print "DEBUG: Odmazal jsem prvek: $odmazanej z pole delky $delka_pole. Test: $trtr \n" if $DEBUG;
 	};
 	#remove first element (tj. prijdu rano do saten)
 	shift (@poleuxt);
+	$delka_pole = scalar @poleuxt;
 	print "R procedury pocitej odpracovane o uzivatele $user: ZAZN: $delka_pole : @poleuxt \n" if $DEBUG;
 	
 	$suma_sekund = 0;
