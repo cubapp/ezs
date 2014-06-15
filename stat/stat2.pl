@@ -42,22 +42,28 @@ while ( <FILENAME> )
 close(FILENAME);
 
 $starejklic = 0;
+my %denni_stat;
 
-# v elementu [0] hledej prvni tri slova. Ty hledej v dalsi iteraci, dokud se nezmeni
+print "Datum,|,uzivatel,minuty,hodiny,|,uzivatel,minuty,hodiny,|,uzivatel,minuty,hodiny,|,uzivatel,minuty,hodiny,|,uzivatel,minuty,hodiny,|,uzivatel,minuty,hodiny,\n";
+
+# v elementu [0] hledej prvni tri slova. ty hledej v dalsi iteraci, dokud se nezmeni
 #foreach $row (0..@filename-1){
 foreach $row (0..@filename){
 	$datumovka = $filename[$row][0];
 	($dweek, $month, $date, $time, $year)  = split(' ',$datumovka);
 	$uxtime = $filename[$row][1];
-	$ID = $filename[$row][2];
+	$id = $filename[$row][2];
 	$klic = $month." ".$date;
 	if ($klic ne $starejklic && $starejklic){
 		&zpracuj_den_uzivatele();
 		%denni_pole = ();
 	}
-	push @{ $denni_pole{$ID} }, $uxtime;
+	push @{ $denni_pole{$id} }, $uxtime;
 	$starejklic = $klic;
 }
+
+
+print "Datum,|,uzivatel,minuty,hodiny,|,uzivatel,minuty,hodiny,|,uzivatel,minuty,hodiny,|,uzivatel,minuty,hodiny,|,uzivatel,minuty,hodiny,|,uzivatel,minuty,hodiny,\n";
 
 # je treba vyhodnotit>
 ## 1. jestli pocet stisku tlacitka je lichy, pak hlasi problem a udelat zakladni odecet
@@ -76,6 +82,7 @@ sub zpracuj_den_uzivatele ()
 	$dnesni_datum = $starejklic;
 	$count_user = 0;
 	@docasne_pole = ();
+	print "-------------[ Datum $dnesni_datum \n" if $DEBUG;
 	foreach $user ( keys %tempole ) {
 		undef @novepole ;
 		$real_user = $user_tab{$user};
@@ -107,7 +114,22 @@ sub zpracuj_den_uzivatele ()
 		&pocitej_odpracovane($real_user, @novepole);
 		$count_user++;
  	}
-	print "-------------[ Za datum $dnesni_datum zpracovano $count_user uzivatelu\n";
+	print "-------------[ Za datum $dnesni_datum zpracovano $count_user uzivatelu\n" if $DEBUG;
+
+
+	print "$dnesni_datum"; 
+	foreach $uziv ( values %user_tab ){
+		$minut = $denni_stat{$uziv};
+		
+		if ( ! $minut ) {
+			$minut = 0 ;
+		}
+		$hodin = sprintf "%.2f",$minut/60;
+		print ", ,$uziv,$minut,$hodin";	
+	}
+	print "\n";
+
+	undef %denni_stat;
         undef %tempole;
 }
 
@@ -138,7 +160,9 @@ sub pocitej_odpracovane() {
 			$suma_sekund += $rozdil;
 		}
 	}
-	$suma_minut = $suma_sekund/60;
-	$suma_hodin = $suma_minut/60;
-	print "Celkem $user namakal $suma_sekund s, tj. $suma_minut min, tj $suma_hodin h\n";
+	$suma_minut = int($suma_sekund/60);
+#	$suma_hodin = $suma_minut/60;
+	$suma_hodin = sprintf "%.2f",$suma_minut/60;
+	$denni_stat{$user} = $suma_minut;
+	print "Celkem $user namakal $suma_minut min, tj. $suma_hodin hodin\n" if $DEBUG;
 }
